@@ -77,7 +77,7 @@ BEGIN
             VALUE "FileDescription", "VirtualDJ Other Plugin"
             VALUE "FileVersion", "4, 1, 0, 0"
             VALUE "InternalName", "CrossfaderCurves"
-            VALUE "LegalCopyright", "Copyright (C) 2016-2025 DJ CEL"
+            VALUE "LegalCopyright", "Copyright (C) 2016-2026 DJ CEL"
             VALUE "OriginalFilename", "CrossfaderCurves"
             VALUE "ProductName", "VirtualDJ"
             VALUE "ProductVersion", "8, 0, 0, 0"
