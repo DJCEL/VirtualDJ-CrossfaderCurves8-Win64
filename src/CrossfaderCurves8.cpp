@@ -26,7 +26,8 @@ HRESULT VDJ_API CCrossfaderCurves8::OnLoad()
 {	
 	HRESULT hr;
 	hr = DeclareParameterCustom(&select,ID_CUSTOM_1,"Curve","CUR",sizeof(int));
-	hr = DeclareParameterSwitch(&inverted,ID_SWITCH_1,"XF Hamster", "INV",FALSE);
+	hr = DeclareParameterSwitch(&inverted,ID_SWITCH_1,"XF Hamster", "INV",false);
+	hr = DeclareParameterSwitch(&show_sum, ID_SWITCH_2, "Show Sum", "SM", false);
 	hr = DeclareParameterCustom(&VP0,ID_CUSTOM_2,"VP0","VP0",sizeof(float));
 	hr = DeclareParameterCustom(&C1P1,ID_CUSTOM_3,"C1P1","C1P1",sizeof(int));
 	hr = DeclareParameterCustom(&V1P1,ID_CUSTOM_4,"V1P1","V1P1",sizeof(int));
@@ -61,7 +62,7 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetPluginInfo(TVdjPluginInfo8 *infos)
 	infos->PluginName  = "CrossfaderCurves";
 	infos->Author      = "DJ CEL";
 	infos->Description = "Draw your own crossfader curve";
-	infos->Version     = "4.2";
+	infos->Version     = "4.3";
 	infos->Flags       = 0x00;
 
 	
@@ -596,7 +597,9 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 			
 	button1_down=false;
 	button2_down=false;
+	button3_down = false;
 	button4_down=false;
+	button5_down = false;
 	point1_down=false;
 	point2_down=false;
 	point0_down=false;
@@ -623,6 +626,7 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 	ZeroMemory(&r7,sizeof(RECT));
 	ZeroMemory(&r8,sizeof(RECT));
 	ZeroMemory(&r9,sizeof(RECT));
+	ZeroMemory(&r10, sizeof(RECT));
 }
 //---------------------------------------------------------------------------
 void CCrossfaderCurves8::ReleaseInterface(HWND hDlg)
@@ -789,11 +793,18 @@ void CCrossfaderCurves8::OnMouseDown(HWND hDlg,int x,int y,int button)
 			Invalidate(hDlg);
 		}
 
+		if (x >= r10.left && x <= r10.right)   // Bouton 5 : Show Sum
+		{
+			button5_down = true;
+			show_sum = show_sum ? 0 : 1;
+			Invalidate(hDlg);
+		}
+
 		if (x>=r8.left && x<=r8.right)   // Bouton 3 : About?
 		{
 			button3_down=true;
 			Invalidate(hDlg);
-			ShowAbout(hDlg, true);
+			ShowAbout(hDlg, true, r8);
 		}
 
 		if (x>=r9.left && x<=r9.right)   // Bouton 4 : Sélection de l'autre courbe
@@ -822,6 +833,7 @@ void CCrossfaderCurves8::OnMouseUp(HWND hDlg,int x,int y,int button)
 		button2_down=false;
 		button3_down=false;
 		button4_down=false;
+		button5_down = false;
 		point1_down=false;
 		point2_down=false;
 		point0_down=false;
@@ -992,11 +1004,11 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 
 	if (select==1) // mode custom
 	{
-		NB_BUTTONS = 4;
+		NB_BUTTONS = 5;
 	}
 	else
 	{
-		NB_BUTTONS = 3;
+		NB_BUTTONS = 4;
 	}
 
 	largeur_bouton=(int) ((float)(rButtons.right - rButtons.left)/(float) ((float)NB_BUTTONS + 0.4));
@@ -1005,14 +1017,15 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 
 	DrawButton(hDC,&r6, rButtons, button1_down,"XF_Curves",largeur_bouton,inter_espace);
 	DrawButton(hDC,&r7, r6,(inverted==TRUE),"XF_Hamster",largeur_bouton,inter_espace);
-	DrawButton(hDC,&r8, r7, button3_down,"About?",largeur_bouton,inter_espace);
+	DrawButton(hDC,&r10, r7, (show_sum==TRUE), "Show Sum", largeur_bouton, inter_espace);
+	DrawButton(hDC,&r8, r10, button3_down,"About?",largeur_bouton,inter_espace);
 	if (select==1) // mode custom
 	{
 		if (select_level1 == true) DrawButton(hDC,&r9, r8,button4_down,"Level 1",largeur_bouton,inter_espace);
 		else DrawButton(hDC,&r9, r8,button4_down,"Level 2",largeur_bouton,inter_espace);
 	}
 	
-	
+
 	// Cadre blanc en fond noir		
 	rCurves.top    = rButtons.bottom + 10;
 	rCurves.bottom = r->bottom - 10;
@@ -1115,9 +1128,12 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 		TextOut(hDC,rAxes.right-30,rAxes.top-20,"Level 2",(int)strlen("Level 2"));
 	}
 
-	SetTextColor(hDC, RGB(255, 251, 170));
-	TextOut(hDC,xMiddle_curves_XF-10,rAxes.top-20,"Sum",(int)strlen("Sum")); 
-
+	if (show_sum)
+	{
+		SetTextColor(hDC, RGB(255, 251, 170));
+		TextOut(hDC, xMiddle_curves_XF - 10, rAxes.top - 20, "Sum", (int)strlen("Sum"));
+	}
+	
 	if (mousedown_curves && select != 1)
 	{
 		
@@ -1169,7 +1185,7 @@ void CCrossfaderCurves8::DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious, bool 
 	DrawText(hDC, text, -1, rCurrent, DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX);
 }
 //---------------------------------------------------------------------------
-void CCrossfaderCurves8::ShowAbout(HWND hDlg, bool isToolTip)
+void CCrossfaderCurves8::ShowAbout(HWND hDlg, bool isToolTip, RECT rc)
 {
 	char msg[2048] = "";
 	sprintf(msg, "Plugin name: %s\r\nAuthor: %s\r\nVersion: %s\r\nDescription: %s\r\n\nPlease note that non-linear curves are an approximation of real curves. In this plugin, it's a sampling of 101 dots with a precision of 2 decimals on the value.", _TAbout.PluginName, _TAbout.Author, _TAbout.Version, _TAbout.Description);
@@ -1187,7 +1203,7 @@ void CCrossfaderCurves8::ShowAbout(HWND hDlg, bool isToolTip)
 			memset(&toolinfo, 0, sizeof(TOOLINFO));
 			toolinfo.cbSize = sizeof(TOOLINFO);
 			toolinfo.uFlags = TTF_SUBCLASS;
-			toolinfo.rect = r8;
+			toolinfo.rect = rc;
 			toolinfo.hwnd = hWndPlugin;
 			toolinfo.hinst = NULL;
 			toolinfo.lpszText = msg;
@@ -1502,8 +1518,6 @@ void CCrossfaderCurves8::DrawLevel(HDC hDC)
 	int xP_tmp,yP_tmp;
 	int XF;
 	int lv;
-	float SumLevel;
-
 	
 	for(lv=0;lv<2;lv++)
 	{
@@ -1530,29 +1544,35 @@ void CCrossfaderCurves8::DrawLevel(HDC hDC)
 
 	}
 
-	// Sum of both curves
-	for(XF=0;XF<=100;XF++)
+	
+	if (show_sum)
 	{
-		SumLevel = (level[0][XF] + level[1][XF])/2.0f;
-
-		xP = rAxes.left + (int)(float(XF) / 100.0f *(float)(rAxes.right-rAxes.left));
-		yP = rAxes.bottom - (int)(SumLevel*(float)(rAxes.bottom-rAxes.top));
-
-		if(XF==0)
+		float SumLevel;
+		// Sum of both curves
+		for (XF = 0;XF <= 100;XF++)
 		{
+			SumLevel = (level[0][XF] + level[1][XF]) / 2.0f;
+
+			xP = rAxes.left + (int)(float(XF) / 100.0f * (float)(rAxes.right - rAxes.left));
+			yP = rAxes.bottom - (int)(SumLevel * (float)(rAxes.bottom - rAxes.top));
+
+			if (XF == 0)
+			{
+				xP_tmp = xP;
+				yP_tmp = yP;
+			}
+
+			SelectObject(hDC, hPenLevel3);
+
+			MoveToEx(hDC, xP, yP, (LPPOINT)NULL);
+			LineTo(hDC, xP_tmp, yP_tmp);
+
 			xP_tmp = xP;
 			yP_tmp = yP;
+
 		}
-			
-		SelectObject(hDC, hPenLevel3);
-			
-		MoveToEx(hDC, xP, yP, (LPPOINT) NULL);
-		LineTo(hDC, xP_tmp, yP_tmp);
-			
-		xP_tmp = xP;
-		yP_tmp = yP;
-		
 	}
+	
 }
 //--------------------------------------------------------------------------
 void CCrossfaderCurves8::DrawPointsLevel(HDC hDC) 
@@ -1596,4 +1616,3 @@ void CCrossfaderCurves8::DrawPointsLevel(HDC hDC)
 	}
 }
 #endif
-

@@ -40,6 +40,7 @@ private:
 
 	int select;
 	int inverted; // inversion du crossfader
+	int show_sum;
 	char selectText[128];
 	float level1[101];
 	float level2[101];
@@ -80,7 +81,7 @@ private:
 			void DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious,bool status, char *text,int largeur_bouton,int inter_espace);
 			void DrawPointsLevel(HDC hDC);
 			void DrawLevel(HDC hDC);
-			void ShowAbout(HWND hDlg, bool isToolTip);
+			void ShowAbout(HWND hDlg, bool isToolTip, RECT rc);
 
 			struct TVdjPluginInfo8  _TAbout;
 			
@@ -109,6 +110,7 @@ private:
 			RECT r7; // Bouton 2
 			RECT r8; // Bouton 4
 			RECT r9; // Bouton 3
+			RECT r10; // Bouton 5
 
 			int NB_BUTTONS;
 			int Width;
@@ -122,6 +124,7 @@ private:
 			bool button2_down;
 			bool button3_down;
 			bool button4_down;
+			bool button5_down;
 			bool point1_down;
 			bool point2_down;
 			bool point0_down;
@@ -139,6 +142,7 @@ private:
 	{
 		ID_INIT,
 		ID_SWITCH_1,
+		ID_SWITCH_2,
 		ID_CUSTOM_1,
 		ID_CUSTOM_2,
 		ID_CUSTOM_3,
