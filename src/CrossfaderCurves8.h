@@ -64,6 +64,7 @@ private:
 			void OnMouseDown(HWND hDlg, int x,int y,int button);
 			void OnMouseUp(HWND hDlg, int x,int y,int button);
 			void OnMouseMove(HWND hDlg,int x,int y);
+			void OnMouseLeave(HWND hDlg);
 			void OnResize(HWND hDlg,int WndWidth,int WndHeight);
 			void OnCommand(HWND hDlg, WORD id);
 			void OnPaint(HDC hDC);
@@ -75,7 +76,7 @@ private:
 			void DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious,bool status, char *text,int largeur_bouton,int inter_espace);
 			void DrawPointsLevel(HDC hDC);
 			void DrawLevel(HDC hDC);
-			void ShowAbout(HWND hDlg);
+			void ShowAbout(HWND hDlg, bool isToolTip);
 
 			struct TVdjPluginInfo8  _TAbout;
 			
@@ -115,10 +116,12 @@ private:
 			bool mousedown_curves; // Appui sur le point des courbes avec la souris
 			bool button1_down;
 			bool button2_down;
+			bool button3_down;
 			bool button4_down;
 			bool point1_down;
 			bool point2_down;
 			bool point0_down;
+			bool mouseOver;
 			int xMiddle_curves_XF;
 			int yMiddle_curves_level;
 			int x1P1,y1P1,x1P2,y1P2;
