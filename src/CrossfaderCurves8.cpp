@@ -127,14 +127,14 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 HRESULT VDJ_API CCrossfaderCurves8::OnStart()
 {
 	HRESULT hr = S_FALSE;
-	//hr = SendCommand("effect_show_gui on");
+	hr = SendCommand("effect_show_gui on");
 	return S_OK;
 }
 //--------------------------------------------------------------------------
 HRESULT VDJ_API CCrossfaderCurves8::OnStop()
 {
 	HRESULT hr = S_FALSE;
-	//hr = SendCommand("effect_show_gui off");
+	hr = SendCommand("effect_show_gui off");
 	return S_OK;
 }
 //--------------------------------------------------------------------------
