@@ -1,31 +1,40 @@
 ﻿#include "CrossfaderCurves8.h"
 
 
+
 //-----------------------------------------------------------------------------
-HRESULT VDJ_API CCrossfaderCurves8::OnLoad()
-{	
-	HRESULT hr;
+CCrossfaderCurves8::CCrossfaderCurves8()
+{
+	memset(selectText, 0, sizeof(selectText));
+	memset(level1, 0, sizeof(level1));
+	memset(level2, 0, sizeof(level2));
+	select = -1;
 
 	#if (defined(CROSSFADERCURVES8_GUI))
 		hWndPlugin = NULL;
 	#endif
-
-	memset(selectText,0,sizeof(selectText));
-	memset(level1,0,sizeof(level1));
-	memset(level2,0,sizeof(level2));
-
-	select=-1;
-
+}
+//-----------------------------------------------------------------------------
+CCrossfaderCurves8::~CCrossfaderCurves8()
+{
+	#if (defined(CROSSFADERCURVES8_GUI))
+		hWndPlugin = NULL;
+	#endif
+}
+//-----------------------------------------------------------------------------
+HRESULT VDJ_API CCrossfaderCurves8::OnLoad()
+{	
+	HRESULT hr;
 	hr = DeclareParameterCustom(&select,ID_CUSTOM_1,"Curve","CUR",sizeof(int));
-	hr = DeclareParameterSwitch(&inverted,ID_SWITCH_1,"XF Hamster", "INV",FALSE); // crossfader non inversé
+	hr = DeclareParameterSwitch(&inverted,ID_SWITCH_1,"XF Hamster", "INV",FALSE);
 	hr = DeclareParameterCustom(&VP0,ID_CUSTOM_2,"VP0","VP0",sizeof(float));
 	hr = DeclareParameterCustom(&C1P1,ID_CUSTOM_3,"C1P1","C1P1",sizeof(int));
 	hr = DeclareParameterCustom(&V1P1,ID_CUSTOM_4,"V1P1","V1P1",sizeof(int));
-        hr = DeclareParameterCustom(&C1P2,ID_CUSTOM_5,"C1P2","C1P2",sizeof(int));
+    hr = DeclareParameterCustom(&C1P2,ID_CUSTOM_5,"C1P2","C1P2",sizeof(int));
 	hr = DeclareParameterCustom(&V1P2,ID_CUSTOM_6,"V1P2","V1P2",sizeof(int));
 	hr = DeclareParameterCustom(&C2P1,ID_CUSTOM_7,"C2P1","C2P1",sizeof(int));
 	hr = DeclareParameterCustom(&V2P1,ID_CUSTOM_8,"V2P1","V2P1",sizeof(int));
-        hr = DeclareParameterCustom(&C2P2,ID_CUSTOM_9,"C2P2","C2P2",sizeof(int));
+    hr = DeclareParameterCustom(&C2P2,ID_CUSTOM_9,"C2P2","C2P2",sizeof(int));
 	hr = DeclareParameterCustom(&V2P2,ID_CUSTOM_10,"V2P2","V2P2",sizeof(int));
 
 	if (select<0) select=2; // initialise au mode Full
@@ -112,6 +121,20 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 	pluginInterface->Type = VDJINTERFACE_DEFAULT;
 #endif
 	
+	return S_OK;
+}
+//--------------------------------------------------------------------------
+HRESULT VDJ_API CCrossfaderCurves8::OnStart()
+{
+	HRESULT hr = S_FALSE;
+	//hr = SendCommand("effect_show_gui on");
+	return S_OK;
+}
+//--------------------------------------------------------------------------
+HRESULT VDJ_API CCrossfaderCurves8::OnStop()
+{
+	HRESULT hr = S_FALSE;
+	//hr = SendCommand("effect_show_gui off");
 	return S_OK;
 }
 //--------------------------------------------------------------------------

@@ -21,12 +21,16 @@
 class CCrossfaderCurves8 : public IVdjPlugin8
 {
 public:
+	CCrossfaderCurves8();
+	~CCrossfaderCurves8();
 	HRESULT VDJ_API OnLoad();
 	HRESULT VDJ_API OnGetPluginInfo(TVdjPluginInfo8 *infos);
 	ULONG   VDJ_API Release();
 	HRESULT VDJ_API OnParameter(int id);
 	HRESULT VDJ_API OnGetParameterString(int id, char *outParam, int outParamSize);
 	HRESULT VDJ_API OnGetUserInterface(TVdjPluginInterface8 *pluginInterface);
+	HRESULT VDJ_API OnStart();
+	HRESULT VDJ_API OnStop();
 	
 private:
 	bool RemplirTableauLevel1(int type);

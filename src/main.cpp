@@ -3,8 +3,9 @@
 HRESULT VDJ_API DllGetClassObject(const GUID &rclsid,const GUID &riid,void** ppObject)
 {
 	// This is the standard DLL loader for COM object.
+	// here: IID_IVdjPluginBasic8 or IID_IVdjPluginStartStop8
 
-	if (memcmp(&rclsid,&CLSID_VdjPlugin8,sizeof(GUID))==0 && memcmp(&riid,&IID_IVdjPluginBasic8,sizeof(GUID))==0)
+	if (memcmp(&rclsid,&CLSID_VdjPlugin8,sizeof(GUID))==0 && memcmp(&riid,&IID_IVdjPluginStartStop8,sizeof(GUID))==0)
 	{
 		*ppObject = new CCrossfaderCurves8();
 	}
