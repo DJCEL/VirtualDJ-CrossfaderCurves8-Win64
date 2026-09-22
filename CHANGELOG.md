@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.4 (2026-09-22)
+- Use class IVdjPluginStartStop8 instead of class IVdjPlugin8
+
 ## 4.3 (2026-09-19)
 - <Sum> is now an option
 - publish on VirtualDJ website 
