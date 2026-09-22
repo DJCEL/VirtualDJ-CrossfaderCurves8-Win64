@@ -18,7 +18,7 @@
 //---------------------------------------------------------------------------
 // Class definition
 //---------------------------------------------------------------------------
-class CCrossfaderCurves8 : public IVdjPlugin8
+class CCrossfaderCurves8 : public IVdjPluginStartStop8
 {
 public:
 	CCrossfaderCurves8();
