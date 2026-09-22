@@ -504,7 +504,8 @@ void CCrossfaderCurves8::CreateWindowGUI(HINSTANCE hInstance,HWND hWndParent,int
 void CCrossfaderCurves8::CloseWindowGUI(HWND hDlg)
 {
 	HRESULT hr = S_FALSE;
-	hr = SendCommand("effect_show_gui");
+	hr = SendCommand("effect_show_gui off");
+	hr = SendCommand("effect_activate off");
 }
 //----------------------------------------------------------------------------------------
 void CCrossfaderCurves8::DestroyWindowGUI()
