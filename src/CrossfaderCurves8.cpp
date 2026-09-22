@@ -107,8 +107,14 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 	HRESULT hr;
 	double qRes;
 	hr = GetInfo("get hwnd",&qRes);
-	if(hr!=S_OK) hWndParent=NULL;
-	else hWndParent = (VDJ_WINDOW) (INT_PTR) qRes;
+	if (hr == S_OK)
+	{
+		hWndParent = (VDJ_WINDOW)(INT_PTR)qRes;
+	}
+	else 
+	{
+		hWndParent = GetActiveWindow();
+	}
 
 	Width = 600;
 	Height = 500;
@@ -128,6 +134,13 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 HRESULT VDJ_API CCrossfaderCurves8::OnStart()
 {
 	HRESULT hr = S_FALSE;
+	double result;
+	hr = GetInfo("effect_show_gui", &result);
+	if (hr == S_OK)
+	{
+		if (result == 1.0f) return S_OK;
+	}
+		
 	hr = SendCommand("effect_show_gui on");
 	return S_OK;
 }
@@ -135,6 +148,13 @@ HRESULT VDJ_API CCrossfaderCurves8::OnStart()
 HRESULT VDJ_API CCrossfaderCurves8::OnStop()
 {
 	HRESULT hr = S_FALSE;
+	double result;
+	hr = GetInfo("effect_show_gui", &result);
+	if (hr == S_OK)
+	{
+		if (result == 0.0f) return S_OK;
+	}
+
 	hr = SendCommand("effect_show_gui off");
 	return S_OK;
 }
