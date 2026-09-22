@@ -95,7 +95,7 @@ END
 // Dialog
 //
 
-IDD_DIALOG1 DIALOGEX 0, 0, 267, 130
+IDD_DIALOG1 DIALOGEX 0, 0, 272, 130
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Dialog"
@@ -115,12 +115,23 @@ BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 260
+        RIGHTMARGIN, 265
         TOPMARGIN, 7
         BOTTOMMARGIN, 123
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 #endif    // Anglais (États-Unis) resources
 /////////////////////////////////////////////////////////////////////////////

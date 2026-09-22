@@ -828,6 +828,7 @@ void CCrossfaderCurves8::OnMouseDown(HWND hDlg,int x,int y,int button)
 			button6_down = true;
 			Invalidate(hDlg);
 			CloseWindowGUI(hDlg);
+			button6_down = false;
 		}
 	}
 	else if (y>=rAxes.top && y<=rAxes.bottom) // Déplacement des points des courbes dans la zone de tracé
@@ -1035,14 +1036,19 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 	DrawButton(hDC,&r6, rButtons, button1_down,"XF_Curves",largeur_bouton,inter_espace);
 	DrawButton(hDC,&r7, r6,(inverted==TRUE),"XF_Hamster",largeur_bouton,inter_espace);
 	DrawButton(hDC,&r10, r7, (show_sum==TRUE), "Show Sum", largeur_bouton, inter_espace);
-	DrawButton(hDC,&r8, r10, button3_down,"About?",largeur_bouton,inter_espace);
-	if (select==1) // mode custom
+	if (select == 1) // mode custom
 	{
-		if (select_level1 == true) DrawButton(hDC,&r9, r8,button4_down,"Level 1",largeur_bouton,inter_espace);
-		else DrawButton(hDC,&r9, r8,button4_down,"Level 2",largeur_bouton,inter_espace);
+		if (select_level1 == true) DrawButton(hDC, &r9, r10, button4_down, "Level 1", largeur_bouton, inter_espace);
+		else DrawButton(hDC, &r9, r10, button4_down, "Level 2", largeur_bouton, inter_espace);
+		DrawButton(hDC, &r8, r9, false, "About?", largeur_bouton, inter_espace);
 	}
-	DrawButton(hDC, &r11, r9, button6_down, "X", largeur_bouton, inter_espace);
+	else
+	{
+		DrawButton(hDC, &r8, r10, false, "About?", largeur_bouton, inter_espace);
+	}
+	DrawButton(hDC, &r11, r8, button6_down, "X", largeur_bouton, inter_espace);
 	
+
 
 	// Cadre blanc en fond noir		
 	rCurves.top    = rButtons.bottom + 10;
