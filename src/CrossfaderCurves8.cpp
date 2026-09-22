@@ -62,7 +62,7 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetPluginInfo(TVdjPluginInfo8 *infos)
 	infos->PluginName  = "CrossfaderCurves";
 	infos->Author      = "DJ CEL";
 	infos->Description = "Draw your own crossfader curve";
-	infos->Version     = "4.3";
+	infos->Version     = "4.4";
 	infos->Flags       = 0x00;
 
 	
