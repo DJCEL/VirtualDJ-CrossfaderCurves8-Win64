@@ -5,13 +5,60 @@
 //-----------------------------------------------------------------------------
 CCrossfaderCurves8::CCrossfaderCurves8()
 {
+	select = -1;
+	inverted = 0;
+	show_sum = 0;
 	memset(selectText, 0, sizeof(selectText));
 	memset(level1, 0, sizeof(level1));
 	memset(level2, 0, sizeof(level2));
-	select = -1;
+	memset(level, 0, sizeof(level));
+	type1 = 0;
+	type2 = 0;
+	C1P1 = 0;
+	C1P2 = 0;
+	C2P1 = 0;
+	C2P2 = 0;
+	V1P1 = 0;
+	V1P2 = 0;
+	V2P1 = 0;
+	V2P2 = 0;
+	VP0 = 0;
 
 	#if (defined(CROSSFADERCURVES8_GUI))
 		hWndPlugin = NULL;
+		hWndParent = NULL;
+		MenuSelect = 0;
+		NB_BUTTONS = 0;
+		Width = 0;
+		Height = 0;
+		GridHeight = 0;
+		GridWidth = 0;
+		lock_custom = false;
+		select_level1 = false;
+		mousedown_curves = false;
+		button1_down = false;
+		button2_down = false;
+		button3_down = false;
+		button4_down = false;
+		button5_down = false;
+		button6_down = false;
+		point1_down = false;
+		point2_down = false;
+		point0_down = false;
+		mouseOver = false;
+		xMiddle_curves_XF = 0;
+		yMiddle_curves_level = 0;
+		x1P1 = 0;
+		y1P1 = 0;
+		x1P2 = 0;
+		y1P2 = 0;
+		x2P1 = 0;
+		y2P1 = 0;
+		x2P2 = 0;
+		y2P2 = 0;
+		xP0 = 0;
+		yP0 = 0;
+		memset(strVPO, 0, sizeof(strVPO));
 	#endif
 }
 //-----------------------------------------------------------------------------
@@ -504,7 +551,6 @@ void CCrossfaderCurves8::CreateWindowGUI(HINSTANCE hInstance,HWND hWndParent,int
 void CCrossfaderCurves8::CloseWindowGUI(HWND hDlg)
 {
 	HRESULT hr = S_FALSE;
-	hr = SendCommand("effect_show_gui off");
 	hr = SendCommand("effect_activate off");
 }
 //----------------------------------------------------------------------------------------
