@@ -133,14 +133,7 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 //--------------------------------------------------------------------------
 HRESULT VDJ_API CCrossfaderCurves8::OnStart()
 {
-	HRESULT hr = S_FALSE;
-	double result;
-	hr = GetInfo("effect_show_gui", &result);
-	if (hr == S_OK)
-	{
-		if (result == 1.0f) return S_OK;
-	}
-		
+	HRESULT hr = S_FALSE;	
 	hr = SendCommand("effect_show_gui on");
 	return S_OK;
 }
@@ -148,13 +141,6 @@ HRESULT VDJ_API CCrossfaderCurves8::OnStart()
 HRESULT VDJ_API CCrossfaderCurves8::OnStop()
 {
 	HRESULT hr = S_FALSE;
-	double result;
-	hr = GetInfo("effect_show_gui", &result);
-	if (hr == S_OK)
-	{
-		if (result == 0.0f) return S_OK;
-	}
-
 	hr = SendCommand("effect_show_gui off");
 	return S_OK;
 }
@@ -517,7 +503,8 @@ void CCrossfaderCurves8::CreateWindowGUI(HINSTANCE hInstance,HWND hWndParent,int
 //----------------------------------------------------------------------------------------
 void CCrossfaderCurves8::CloseWindowGUI(HWND hDlg)
 {
-	SendCommand("effect_show_gui");
+	HRESULT hr = S_FALSE;
+	hr = SendCommand("effect_show_gui");
 }
 //----------------------------------------------------------------------------------------
 void CCrossfaderCurves8::DestroyWindowGUI()
@@ -617,9 +604,10 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 			
 	button1_down=false;
 	button2_down=false;
-	button3_down = false;
+	button3_down=false;
 	button4_down=false;
-	button5_down = false;
+	button5_down=false;
+	button6_down=false;
 	point1_down=false;
 	point2_down=false;
 	point0_down=false;
@@ -647,6 +635,7 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 	ZeroMemory(&r8,sizeof(RECT));
 	ZeroMemory(&r9,sizeof(RECT));
 	ZeroMemory(&r10, sizeof(RECT));
+	ZeroMemory(&r11, sizeof(RECT));
 }
 //---------------------------------------------------------------------------
 void CCrossfaderCurves8::ReleaseInterface(HWND hDlg)
@@ -833,6 +822,13 @@ void CCrossfaderCurves8::OnMouseDown(HWND hDlg,int x,int y,int button)
 			select_level1=!select_level1;
 			Invalidate(hDlg);
 		}
+
+		if (x >= r11.left && x <= r11.right)   // Bouton 6 : Close of the window
+		{
+			button6_down = true;
+			Invalidate(hDlg);
+			CloseWindowGUI(hDlg);
+		}
 	}
 	else if (y>=rAxes.top && y<=rAxes.bottom) // Déplacement des points des courbes dans la zone de tracé
 	{
@@ -853,7 +849,8 @@ void CCrossfaderCurves8::OnMouseUp(HWND hDlg,int x,int y,int button)
 		button2_down=false;
 		button3_down=false;
 		button4_down=false;
-		button5_down = false;
+		button5_down=false;
+		button6_down=false;
 		point1_down=false;
 		point2_down=false;
 		point0_down=false;
@@ -1024,11 +1021,11 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 
 	if (select==1) // mode custom
 	{
-		NB_BUTTONS = 5;
+		NB_BUTTONS = 6;
 	}
 	else
 	{
-		NB_BUTTONS = 4;
+		NB_BUTTONS = 5;
 	}
 
 	largeur_bouton=(int) ((float)(rButtons.right - rButtons.left)/(float) ((float)NB_BUTTONS + 0.4));
@@ -1044,6 +1041,7 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 		if (select_level1 == true) DrawButton(hDC,&r9, r8,button4_down,"Level 1",largeur_bouton,inter_espace);
 		else DrawButton(hDC,&r9, r8,button4_down,"Level 2",largeur_bouton,inter_espace);
 	}
+	DrawButton(hDC, &r11, r9, button6_down, "X", largeur_bouton, inter_espace);
 	
 
 	// Cadre blanc en fond noir		

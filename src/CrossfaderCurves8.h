@@ -111,6 +111,7 @@ private:
 			RECT r8; // Bouton 4
 			RECT r9; // Bouton 3
 			RECT r10; // Bouton 5
+			RECT r11; // Bouton 6
 
 			int NB_BUTTONS;
 			int Width;
@@ -125,6 +126,7 @@ private:
 			bool button3_down;
 			bool button4_down;
 			bool button5_down;
+			bool button6_down;
 			bool point1_down;
 			bool point2_down;
 			bool point0_down;
