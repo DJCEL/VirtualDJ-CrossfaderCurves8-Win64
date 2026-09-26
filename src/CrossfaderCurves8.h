@@ -78,10 +78,11 @@ private:
 			HRESULT DrawCurves(HDC hDC);
 			void SetParamCurves(int select);
 			void SetParamCurvesGraphic(HDC hDC,int select);
-			void DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious,bool status, char *text,int largeur_bouton,int inter_espace);
+			void DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious,bool ButtonDown, bool ButtonOver, char *text,int largeur_bouton,int inter_espace);
 			void DrawPointsLevel(HDC hDC);
 			void DrawLevel(HDC hDC);
 			void ShowAbout(HWND hDlg, bool isToolTip, RECT rc);
+			void CloseAbout();
 
 			struct TVdjPluginInfo8  _TAbout;
 			
@@ -95,11 +96,13 @@ private:
 			HMENU hSubMenu7;
 			int MenuSelect;
 
+			HWND ToolTipWnd;
+
 			POINT pt;
 			HBRUSH	hBrushInterfaceCurvesBackground;
 			HPEN	hPenInterfaceCurvesBorder,hPenAxes;
-			HBRUSH  hBrushButton1Background,hBrushButton2Background;
-			HPEN    hPenButton1Border,hPenButton2Border;
+			HBRUSH  hBrushButton1Background,hBrushButton2Background,hBrushButton3Background;
+			HPEN    hPenButton1Border,hPenButton2Border, hPenButton3Border;
 			HPEN    hPenLevel1,hPenLevel2,hPenLevel3;
 			HPEN    hPointBorderUp,hPointBorderDown;
 			
@@ -122,15 +125,20 @@ private:
 			bool select_level1; // Sélection de la courbe du volume (level 1 ou 2)
 			bool mousedown_curves; // Appui sur le point des courbes avec la souris
 			bool button1_down;
+			bool button1_over;
 			bool button2_down;
+			bool button2_over;
 			bool button3_down;
+			bool button3_over;
 			bool button4_down;
+			bool button4_over;
 			bool button5_down;
+			bool button5_over;
 			bool button6_down;
+			bool button6_over;
 			bool point1_down;
 			bool point2_down;
 			bool point0_down;
-			bool mouseOver;
 			int xMiddle_curves_XF;
 			int yMiddle_curves_level;
 			int x1P1,y1P1,x1P2,y1P2;

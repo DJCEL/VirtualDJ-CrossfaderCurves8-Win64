@@ -25,8 +25,9 @@ CCrossfaderCurves8::CCrossfaderCurves8()
 	VP0 = 0;
 
 	#if (defined(CROSSFADERCURVES8_GUI))
-		hWndPlugin = NULL;
-		hWndParent = NULL;
+		memset(strVPO, 0, sizeof(strVPO));
+		hWndPlugin = nullptr;
+		hWndParent = nullptr;
 		MenuSelect = 0;
 		NB_BUTTONS = 0;
 		Width = 0;
@@ -37,15 +38,20 @@ CCrossfaderCurves8::CCrossfaderCurves8()
 		select_level1 = false;
 		mousedown_curves = false;
 		button1_down = false;
+		button1_over = false;
 		button2_down = false;
+		button2_over = false;
 		button3_down = false;
+		button3_over = false;
 		button4_down = false;
+		button4_over = false;
 		button5_down = false;
+		button5_over = false;
 		button6_down = false;
+		button6_over = false;
 		point1_down = false;
 		point2_down = false;
 		point0_down = false;
-		mouseOver = false;
 		xMiddle_curves_XF = 0;
 		yMiddle_curves_level = 0;
 		x1P1 = 0;
@@ -58,7 +64,13 @@ CCrossfaderCurves8::CCrossfaderCurves8()
 		y2P2 = 0;
 		xP0 = 0;
 		yP0 = 0;
-		memset(strVPO, 0, sizeof(strVPO));
+		memset(&r6, 0, sizeof(RECT));
+		memset(&r7, 0, sizeof(RECT));
+		memset(&r8, 0, sizeof(RECT));
+		memset(&r9, 0, sizeof(RECT));
+		memset(&r10, 0, sizeof(RECT));
+		memset(&r11, 0, sizeof(RECT));
+		ToolTipWnd = nullptr;
 	#endif
 }
 //-----------------------------------------------------------------------------
@@ -160,7 +172,19 @@ HRESULT VDJ_API CCrossfaderCurves8::OnGetUserInterface(TVdjPluginInterface8 *plu
 	}
 	else 
 	{
-		hWndParent = GetActiveWindow();
+		HWND hWndActive = GetActiveWindow();
+
+		char WindowName[256] = "\0";
+		int length = GetWindowText(hWndActive, WindowName, sizeof(WindowName));
+
+		if (strcmp(WindowName,"VirtualDJ") == 0)
+		{
+			hWndParent = hWndActive;
+		}
+		else
+		{
+			hWndParent = nullptr;
+		}
 	}
 
 	Width = 600;
@@ -650,11 +674,17 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 	else lock_custom=true;
 			
 	button1_down=false;
+	button1_over = false;
 	button2_down=false;
+	button2_over = false;
 	button3_down=false;
+	button3_over = false;
 	button4_down=false;
+	button4_over = false;
 	button5_down=false;
+	button5_over = false;
 	button6_down=false;
+	button6_over = false;
 	point1_down=false;
 	point2_down=false;
 	point0_down=false;
@@ -666,8 +696,10 @@ void CCrossfaderCurves8::InitInterface(HWND hDlg)
 	hBrushInterfaceCurvesBackground = CreateSolidBrush(RGB(0, 0, 0));  // black
 	hBrushButton1Background         = CreateSolidBrush(RGB(35, 36, 37)); // gray
 	hBrushButton2Background = CreateSolidBrush(RGB(21, 108, 137)); // gray light
-	hPenButton1Border = CreatePen(PS_SOLID, 2, RGB(58, 57, 59)); // gray : up
-	hPenButton2Border = CreatePen(PS_SOLID, 2, RGB(58, 57, 59)); // purple : down
+	hBrushButton3Background = CreateSolidBrush(RGB(35, 61, 72)); // blue drak
+	hPenButton1Border = CreatePen(PS_SOLID, 2, RGB(58, 57, 59));
+	hPenButton2Border = CreatePen(PS_SOLID, 2, RGB(58, 57, 59));
+	hPenButton3Border = CreatePen(PS_SOLID, 2, RGB(58, 57, 59));
 
 	hPenInterfaceCurvesBorder = CreatePen(PS_SOLID, 1, RGB(0, 0, 0)); // black
 	hPenAxes                  =	CreatePen(PS_SOLID, 3, RGB(150, 150, 150)); // gray
@@ -699,6 +731,28 @@ void CCrossfaderCurves8::ReleaseInterface(HWND hDlg)
 	DeleteObject(hPenLevel3);
 	DeleteObject(hPointBorderUp);
 	DeleteObject(hPointBorderDown);
+
+	button1_down = false;
+	button1_over = false;
+	button2_down = false;
+	button2_over = false;
+	button3_down = false;
+	button3_over = false;
+	button4_down = false;
+	button4_over = false;
+	button5_down = false;
+	button5_over = false;
+	button6_down = false;
+	button6_over = false;
+	point1_down = false;
+	point2_down = false;
+	point0_down = false;
+
+	if (ToolTipWnd)
+	{
+		DestroyWindow(ToolTipWnd);
+		ToolTipWnd = nullptr;
+	}
 }
 //---------------------------------------------------------------------------
 void CCrossfaderCurves8::InitMenu()
@@ -841,41 +895,46 @@ void CCrossfaderCurves8::OnMouseDown(HWND hDlg,int x,int y,int button)
 			GetCursorPos(&pt);
 			TrackPopupMenu(hMenu,TPM_LEFTALIGN | TPM_LEFTBUTTON,pt.x,pt.y,0,hDlg,NULL);
 		}
-
-		if (x>=r7.left && x<=r7.right)   // Bouton 2 : Inversion de la courbe
+		else if (x>=r7.left && x<=r7.right)   // Bouton 2 : Inversion de la courbe
 		{
 			button2_down=true;
 			inverted = inverted ? 0 : 1;
 			Invalidate(hDlg);
 		}
-
-		if (x >= r10.left && x <= r10.right)   // Bouton 5 : Show Sum
+		else if (x >= r10.left && x <= r10.right)   // Bouton 5 : Show Sum
 		{
 			button5_down = true;
 			show_sum = show_sum ? 0 : 1;
 			Invalidate(hDlg);
 		}
-
-		if (x>=r8.left && x<=r8.right)   // Bouton 3 : About?
+		else if (x>=r8.left && x<=r8.right)   // Bouton 3 : About?
 		{
 			button3_down=true;
 			Invalidate(hDlg);
-			ShowAbout(hDlg, true, r8);
 		}
-
-		if (x>=r9.left && x<=r9.right)   // Bouton 4 : Sélection de l'autre courbe
+		else if (x>=r9.left && x<=r9.right)   // Bouton 4 : Sélection de l'autre courbe
 		{
 			button4_down=true;
 			select_level1=!select_level1;
 			Invalidate(hDlg);
 		}
-
-		if (x >= r11.left && x <= r11.right)   // Bouton 6 : Close of the window
+		else if (x >= r11.left && x <= r11.right)   // Bouton 6 : Close of the window
 		{
 			button6_down = true;
 			Invalidate(hDlg);
 			CloseWindowGUI(hDlg);
+			button1_down = false;
+			button1_over = false;
+			button2_down = false;
+			button2_over = false;
+			button3_down = false;
+			button3_over = false;
+			button4_down = false;
+			button4_over = false;
+			button5_down = false;
+			button5_over = false;
 			button6_down = false;
+			button6_over = false;
 		}
 	}
 	else if (y>=rAxes.top && y<=rAxes.bottom) // Déplacement des points des courbes dans la zone de tracé
@@ -913,7 +972,81 @@ void CCrossfaderCurves8::OnMouseMove(HWND hDlg,int x,int y)
 	// Vérifie que le curseur est dans la fenêtre du plugin 
 	if((x > 0) && (x < Width) && (y > 0) && (y < Height))
 	{
-	   if(mousedown_curves) //Gestion du mode custom de l'interface graphique 
+		if (y >= rButtons.top && y <= rButtons.bottom)  // Ligne des boutons
+		{
+			if (x >= r6.left && x <= r6.right)  // Bouton 1 : Changement de courbes (pré-programmées)
+			{
+				button1_over = true;
+			}
+			else
+			{
+				button1_over = false;
+			}
+
+			if (x >= r7.left && x <= r7.right)   // Bouton 2 : Inversion de la courbe
+			{
+				button2_over = true;
+			}
+			else
+			{
+				button2_over = false;
+			}
+
+			if (x >= r10.left && x <= r10.right)   // Bouton 5 : Show Sum
+			{
+				button5_over = true;
+			}
+			else
+			{
+				button5_over = false;
+			}
+
+			if (x >= r8.left && x <= r8.right)   // Bouton 3 : About?
+			{
+				button3_over = true;
+				Invalidate(hDlg);
+				ShowAbout(hDlg, true, r8);
+			}
+			else
+			{
+				button3_over = false;
+				CloseAbout();
+			}
+
+			if (x >= r9.left && x <= r9.right)   // Bouton 4 : Sélection de l'autre courbe
+			{
+				button4_over = true;
+			}
+			else
+			{
+				button4_over = false;
+			}
+
+			if (x >= r11.left && x <= r11.right)   // Bouton 6 : Close of the window
+			{
+				button6_over = true;
+			}
+			else
+			{
+				button6_over = false;
+			}
+
+			Invalidate(hDlg);
+		}
+		else
+		{
+			button1_over = false;
+			button2_over = false;
+			button3_over = false;
+			button4_over = false;
+			button5_over = false;
+			button6_over = false;
+			Invalidate(hDlg);
+			CloseAbout();
+		}
+
+
+		if(mousedown_curves) //Gestion du mode custom de l'interface graphique 
 		{
 			if (select==1) // mode custom 1
 			{
@@ -1015,7 +1148,6 @@ void CCrossfaderCurves8::OnMouseMove(HWND hDlg,int x,int y)
 //--------------------------------------------------------------------------
 void CCrossfaderCurves8::OnMouseLeave(HWND hDlg)
 {
-	mouseOver = false;
 	Invalidate(hDlg);
 }
 //--------------------------------------------------------------------------
@@ -1080,20 +1212,20 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 	inter_espace=(int)((float)(rButtons.right - rButtons.left - NB_BUTTONS*largeur_bouton)/(float) (NB_BUTTONS+1));
 
 
-	DrawButton(hDC,&r6, rButtons, button1_down,"XF_Curves",largeur_bouton,inter_espace);
-	DrawButton(hDC,&r7, r6,(inverted==TRUE),"XF_Hamster",largeur_bouton,inter_espace);
-	DrawButton(hDC,&r10, r7, (show_sum==TRUE), "Show Sum", largeur_bouton, inter_espace);
+	DrawButton(hDC,&r6, rButtons, button1_down, button1_over, "XF_Curves",largeur_bouton,inter_espace);
+	DrawButton(hDC,&r7, r6,(inverted==TRUE), button2_over, "XF_Hamster",largeur_bouton,inter_espace);
+	DrawButton(hDC,&r10, r7, (show_sum==TRUE), button5_over, "Show Sum", largeur_bouton, inter_espace);
 	if (select == 1) // mode custom
 	{
-		if (select_level1 == true) DrawButton(hDC, &r9, r10, button4_down, "Level 1", largeur_bouton, inter_espace);
-		else DrawButton(hDC, &r9, r10, button4_down, "Level 2", largeur_bouton, inter_espace);
-		DrawButton(hDC, &r8, r9, false, "About?", largeur_bouton, inter_espace);
+		if (select_level1 == true) DrawButton(hDC, &r9, r10, button4_down, button4_over, "Level 1", largeur_bouton, inter_espace);
+		else DrawButton(hDC, &r9, r10, button4_down, button4_over, "Level 2", largeur_bouton, inter_espace);
+		DrawButton(hDC, &r8, r9, false, button3_over, "About", largeur_bouton, inter_espace);
 	}
 	else
 	{
-		DrawButton(hDC, &r8, r10, false, "About?", largeur_bouton, inter_espace);
+		DrawButton(hDC, &r8, r10, false, button3_over, "About", largeur_bouton, inter_espace);
 	}
-	DrawButton(hDC, &r11, r8, button6_down, "X", largeur_bouton, inter_espace);
+	DrawButton(hDC, &r11, r8, button6_down, button6_over, "X", largeur_bouton, inter_espace);
 	
 
 
@@ -1180,8 +1312,8 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 	// Legende en gris	
 	SetTextColor(hDC, RGB(150,150,150)); 
 	TextOut(hDC,rAxes.left-2,rAxes.bottom+7,"0",(int)strlen("0"));
-	TextOut(hDC,xMiddle_curves_XF-14,rAxes.bottom+7,"0.5",(int)strlen("0.5"));
-	TextOut(hDC,rAxes.right-8,rAxes.bottom+7,"1",(int)strlen("1"));
+	TextOut(hDC,xMiddle_curves_XF-11,rAxes.bottom+7,"0.5",(int)strlen("0.5"));
+	TextOut(hDC,rAxes.right-4,rAxes.bottom+7,"1",(int)strlen("1"));
 
 	// Legende des courbes
 	if(inverted==TRUE)
@@ -1224,7 +1356,7 @@ void CCrossfaderCurves8::DrawInterface(HDC hDC, RECT *r)
 	hr = DrawCurves(hDC);
 }
 //--------------------------------------------------------------------------
-void CCrossfaderCurves8::DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious, bool ButtonDown, char *text,int largeur_bouton,int inter_espace)
+void CCrossfaderCurves8::DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious, bool ButtonDown, bool ButtonOver, char *text,int largeur_bouton,int inter_espace)
 {
 	rCurrent->top    = rPrevious.top;
 	rCurrent->bottom = rPrevious.bottom;
@@ -1242,6 +1374,11 @@ void CCrossfaderCurves8::DrawButton(HDC hDC,RECT *rCurrent,RECT rPrevious, bool 
 	{
 		SelectObject(hDC, hBrushButton2Background);
 		SelectObject(hDC, hPenButton2Border);
+	}
+	else if (ButtonOver) // BorderColor and BackgroundColor when the button is over
+	{
+		SelectObject(hDC, hBrushButton3Background);
+		SelectObject(hDC, hPenButton3Border);
 	}
 	else
 	{
@@ -1261,30 +1398,34 @@ void CCrossfaderCurves8::ShowAbout(HWND hDlg, bool isToolTip, RECT rc)
 	char msg[2048] = "";
 	sprintf(msg, "Plugin name: %s\r\nAuthor: %s\r\nVersion: %s\r\nDescription: %s\r\n\nPlease note that non-linear curves are an approximation of real curves. In this plugin, it's a sampling of 101 dots with a precision of 2 decimals on the value.", _TAbout.PluginName, _TAbout.Author, _TAbout.Version, _TAbout.Description);
 
-	if (isToolTip)
+	if (ToolTipWnd == nullptr)
 	{
-		HWND ToolTipWnd = CreateWindow(TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_BALLOON, 0, 0, 0, 0, hDlg, NULL, NULL, 0);
-
-		if (ToolTipWnd != NULL)
-		{
-			SendMessage(ToolTipWnd, TTM_SETMAXTIPWIDTH, 0, 480);
-			SendMessage(ToolTipWnd, TTM_ACTIVATE, TRUE, 0);
-
-			TOOLINFO toolinfo;
-			memset(&toolinfo, 0, sizeof(TOOLINFO));
-			toolinfo.cbSize = sizeof(TOOLINFO);
-			toolinfo.uFlags = TTF_SUBCLASS;
-			toolinfo.rect = rc;
-			toolinfo.hwnd = hWndPlugin;
-			toolinfo.hinst = NULL;
-			toolinfo.lpszText = msg;
-
-			SendMessage(ToolTipWnd, TTM_ADDTOOL, 0, (LPARAM)&toolinfo);
-		}
+		ToolTipWnd = CreateWindow(TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_BALLOON, 0, 0, 0, 0, hDlg, NULL, NULL, 0);
 	}
-	else
+	
+	if (ToolTipWnd != nullptr)
 	{
-		MessageBox(hDlg, msg, "VirtualDJ plugin", MB_OK);
+		SendMessage(ToolTipWnd, TTM_SETMAXTIPWIDTH, 0, 480);
+		SendMessage(ToolTipWnd, TTM_ACTIVATE, TRUE, 0);
+
+		TOOLINFO ti{};
+		ti.cbSize = sizeof(TOOLINFO);
+		ti.uFlags = TTF_SUBCLASS;
+		ti.rect = rc;
+		ti.hwnd = hWndPlugin;
+		ti.hinst = nullptr;
+		ti.lpszText = msg;
+
+		SendMessage(ToolTipWnd, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));
+	}
+}
+//---------------------------------------------------------------------------
+void CCrossfaderCurves8::CloseAbout()
+{
+	if (ToolTipWnd)
+	{
+		DestroyWindow(ToolTipWnd);
+		ToolTipWnd = nullptr;
 	}
 }
 //--------------------------------------------------------------------------
